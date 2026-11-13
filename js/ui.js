@@ -68,10 +68,26 @@
       <ul class="src">${CFG.sources.map((x) => `<li><a href="${x.url}" target="_blank" rel="noopener">${esc(x.label)}</a></li>`).join("")}</ul>
       <p class="small">지도는 실제 경계를 단순화한 게임용 근사치입니다.</p>`);
   }
+  // 의견 보내기: 별도 화면 (「먼저 온 답장」과 같은 방식으로 저장)
   function showFeedback() {
-    if (CFG.feedbackUrl) sheet(`<h3>의견 보내기</h3><p>버그나 밸런스 의견을 GitHub 이슈로 남겨 주세요.</p><a class="btn primary" style="text-align:center;text-decoration:none;line-height:32px" href="${CFG.feedbackUrl}" target="_blank" rel="noopener">의견 페이지 열기</a>`);
-    else sheet(`<h3>의견 보내기</h3><p>테스트 버전입니다. 의견 받기 주소는 정식 배포 때 연결됩니다.</p>`);
+    closeSheet();
+    ui.fbReturn = ui.screen && ui.screen !== "s-feedback" ? ui.screen : "s-start";
+    if (ui.screen === "s-map") ui.paused = true;
+    $("fbMsg").textContent = ""; $("fbMsg").className = "fb-msg";
+    go("s-feedback");
   }
+  $("fbText").addEventListener("input", () => { $("fbCount").textContent = `${$("fbText").value.length} / 1000`; });
+  $("fbBack").addEventListener("click", () => { go(ui.fbReturn || "s-start"); if (ui.fbReturn === "s-map") { ui.paused = false; renderSpeed(); startLoop(); } });
+  $("fbSend").addEventListener("click", async () => {
+    const msg = $("fbMsg"), text = $("fbText").value.trim();
+    if (text.length < 2) { msg.textContent = "내용을 적어 주세요."; msg.className = "fb-msg bad"; return; }
+    if (!window.sendFeedback) { msg.textContent = "연결을 준비하고 있어요. 잠시 뒤 다시 눌러 주세요."; msg.className = "fb-msg bad"; return; }
+    $("fbSend").disabled = true;
+    const r = await window.sendFeedback(text, { ver: CFG.version });
+    $("fbSend").disabled = false;
+    if (r.ok) { $("fbText").value = ""; $("fbCount").textContent = "0 / 1000"; msg.textContent = "잘 받았어요. 고맙습니다."; msg.className = "fb-msg ok"; if (window.track) window.track("feedback_sent"); }
+    else { msg.textContent = r.error || "보내지 못했어요."; msg.className = "fb-msg bad"; }
+  });
 
   /* ---------- 시작 화면 ---------- */
   $("ver").textContent = `${CFG.title} · 버전 ${CFG.version} · 기준 ${CFG.asOf}`;

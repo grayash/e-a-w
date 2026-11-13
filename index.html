@@ -20,7 +20,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="css/style.css?v=0.4.2">
+<link rel="stylesheet" href="css/style.css?v=0.5.0">
 <style>body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}</style>
 </head>
 <body>
@@ -176,6 +176,18 @@
     <div class="links"><button data-act="feedback">의견 보내기</button><button data-act="sources">출처</button></div>
   </section>
 
+  <!-- 13 의견 보내기 -->
+  <section class="screen" id="s-feedback">
+    <button class="back" id="fbBack">← 돌아가기</button>
+    <h2>의견 보내기</h2>
+    <p class="lead">어색한 전황 보고, 밸런스, 버그, 바라는 점을 알려 주세요. 여기 적은 의견은 공개되지 않고 만든 사람만 봐요. 답장을 받으려면 연락처를 함께 적어 주세요.</p>
+    <textarea id="fbText" maxlength="1000" placeholder="의견을 적어 주세요"></textarea>
+    <div class="small" id="fbCount" style="text-align:right">0 / 1000</div>
+    <p class="fb-msg" id="fbMsg" role="alert"></p>
+    <button class="btn primary" id="fbSend">보내기</button>
+    <p class="small" style="margin-top:14px">공개해도 괜찮은 의견은 <a href="https://github.com/grayash/e-a-w/issues/new" target="_blank" rel="noopener">깃허브에 남겨도</a> 돼요. 의견은 1분에 한 번 보낼 수 있어요.</p>
+  </section>
+
   <!-- 12 공유 링크로 열었을 때 -->
   <section class="screen" id="s-shared">
     <div class="step">공유된 결과</div>
@@ -190,16 +202,17 @@
 <div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
 
-<script src="data/config.js?v=0.4.2"></script>
-<script src="data/countries.js?v=0.4.2"></script>
-<script src="data/rules.js?v=0.4.2"></script>
-<script src="data/map.js?v=0.4.2"></script>
-<script src="data/places.js?v=0.4.2"></script>
-<script src="js/engine.js?v=0.4.2"></script>
-<script src="js/map.js?v=0.4.2"></script>
-<script src="js/epilogue.js?v=0.4.2"></script>
-<script src="js/report.js?v=0.4.2"></script>
-<script src="js/ui.js?v=0.4.2"></script>
-<script type="module" src="js/analytics.js?v=0.4.2"></script>
+<script src="data/config.js?v=0.5.0"></script>
+<script src="data/countries.js?v=0.5.0"></script>
+<script src="data/rules.js?v=0.5.0"></script>
+<script src="data/map.js?v=0.5.0"></script>
+<script src="data/places.js?v=0.5.0"></script>
+<script src="js/engine.js?v=0.5.0"></script>
+<script src="js/map.js?v=0.5.0"></script>
+<script src="js/epilogue.js?v=0.5.0"></script>
+<script src="js/report.js?v=0.5.0"></script>
+<script src="js/ui.js?v=0.5.0"></script>
+<script type="module" src="js/analytics.js?v=0.5.0"></script>
+<script type="module" src="js/feedback.js?v=0.5.0"></script>
 </body>
 </html>

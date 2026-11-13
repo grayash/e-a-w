@@ -216,3 +216,10 @@ a { color: var(--accent); }
 .stats.compact .mini .full { grid-column: 1 / -1; }
 
 .ver { text-align: center; margin: 18px 0 0; }
+
+/* 의견 보내기 */
+#fbText { width: 100%; min-height: 160px; background: var(--panel); color: var(--ink); border: 2px solid var(--line); border-radius: var(--radius);
+  padding: 12px 14px; font: inherit; line-height: 1.6; resize: vertical; }
+#fbText:focus { outline: none; border-color: var(--accent); }
+.fb-msg { min-height: 1.4em; margin: 6px 0 10px; font-size: 0.95rem; }
+.fb-msg.ok { color: var(--good); } .fb-msg.bad { color: var(--bad); }

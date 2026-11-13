@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// 동아시아 전쟁 시뮬레이션: 서버 없이 이 규칙이 접근을 지킨다. (「먼저 온 답장」과 같은 방식)
+// - 의견은 익명 로그인한 기기만 쓸 수 있고, 형식·길이·속도(1분에 한 번)를 규칙이 확인한다.
+// - 받은 의견은 앱에서 아무도 읽을 수 없다. 만든 사람은 Firebase 콘솔(Firestore → feedback)에서 읽고 지운다.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isStr(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
+
+    // 쓰기 속도 제한: 의견 60초에 한 번. 의견 쓰기와 같은 묶음에 이 문서를 함께 써야 통과한다.
+    match /rate/{k} {
+      function spaced(sec) { return resource == null || request.time > resource.data.t + duration.value(sec, 's'); }
+      allow create, update: if signedIn()
+        && request.resource.data.keys().hasOnly(['t'])
+        && request.resource.data.t == request.time
+        && k == request.auth.uid + '_fb' && spaced(60);
+    }
+
+    // 의견: 쓰기만 된다
+    match /feedback/{fid} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['text', 'ver', 'at'])
+        && isStr(request.resource.data.text, 2, 1000)
+        && isStr(request.resource.data.ver, 0, 20)
+        && request.resource.data.at == request.time
+        && getAfter(/databases/$(database)/documents/rate/$(request.auth.uid + '_fb')).data.t == request.time;
+    }
+  }
+}
