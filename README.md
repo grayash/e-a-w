@@ -5,7 +5,7 @@
 - 플레이: https://grayash.github.io/e-a-w/
 - 의견·버그: [Issues](https://github.com/grayash/e-a-w/issues)
 
-> 가상 시뮬레이션이며 실제 전황 예측이나 정치적 입장이 아닙니다. 개인 정보를 수집하지 않습니다.
+> 가상 시뮬레이션이며 실제 전황 예측이나 정치적 입장이 아닙니다. 개인 정보는 수집하지 않고, 익명 방문 통계(Google Analytics for Firebase)만 집계합니다.
 
 ## 구성
 | 경로 | 내용 |

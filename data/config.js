@@ -7,7 +7,7 @@ window.CONFIG = {
   // 배포 시 실제 의견 받기 주소(구글 폼 또는 GitHub Issues)로 교체
   feedbackUrl: "https://github.com/grayash/e-a-w/issues",
   disclaimer: "가상 시뮬레이션이며 실제 전황 예측이나 정치적 입장이 아닙니다.",
-  privacy: "개인 정보를 수집하지 않습니다. 글자 크기 설정만 이 기기에 저장됩니다.",
+  privacy: "이름·연락처 같은 개인 정보는 수집하지 않습니다. 방문 수와 게임 시작·종료 횟수만 익명 통계(Google Analytics for Firebase)로 집계하며, 글자 크기 설정은 이 기기에만 저장됩니다.",
   sources: [
     { label: "Global Firepower 2026 PwrIndx (Sözcü 정리표)", url: "https://www.sozcu.com.tr/dunyanin-en-guclu-ordulari-belli-oldu-turk-ordusu-devler-liginde-p298241" },
     { label: "북한 PwrIndx 0.5933·31위 (Asia Business Daily)", url: "https://view.asiae.co.kr/en/article/2026012807021598638" },

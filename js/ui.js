@@ -156,6 +156,7 @@
 
   function startGame() {
     ui.s = Eng.newGame({ player: ui.player, enemy: ui.enemyActual, stance: ui.stance, cond: Object.assign({}, ui.cond) });
+    if (window.track) window.track("game_start", { player: ui.player, enemy: ui.enemyActual, stance: ui.stance });
     ui.gameMin = 0; ui.hourInTurn = 0; ui.paused = false;
     if (R.speeds.indexOf(ui.speed) < 0) ui.speed = R.speeds[0];
     mapView.setState(ui.s);
@@ -540,6 +541,7 @@
     const condTxt = condGroups().map((g) => `${g.title}: ${g.options.find((x) => x.id === s.cond.P[g.key]).label}`).join(" · ");
     $("timeline").innerHTML = `<div><span class="t">개전</span>${esc(condTxt)}</div>` +
       s.timeline.map((t) => `<div><span class="t">${t.turn}턴</span>${esc(t.choice)} → ${esc(t.result)}<span class="r">${esc(t.reason)}</span></div>`).join("");
+    if (window.track) window.track("game_end", { player: s.sides.P.id, enemy: s.sides.E.id, result: o.type, winner: o.winner, turns: s.turn });
     try { history.replaceState(null, "", "#" + resultCode(s)); } catch (e) { location.hash = resultCode(s); }
     go("s-result");
   }
