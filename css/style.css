@@ -223,3 +223,9 @@ a { color: var(--accent); }
 #fbText:focus { outline: none; border-color: var(--accent); }
 .fb-msg { min-height: 1.4em; margin: 6px 0 10px; font-size: 0.95rem; }
 .fb-msg.ok { color: var(--good); } .fb-msg.bad { color: var(--bad); }
+
+/* 언어별 줄바꿈: 한국어는 어절 단위, 일본어·중국어는 글자 단위 */
+html:lang(ja) body, html:lang(zh-Hans) body, html:lang(zh-Hant) body { word-break: normal; line-break: strict; }
+html:lang(en) body { word-break: normal; overflow-wrap: break-word; }
+.icon-btn.lang-btn { width: auto; padding: 0 12px; gap: 4px; font-size: 0.9rem; }
+.lang-list { display: grid; gap: 8px; margin: 12px 0; }

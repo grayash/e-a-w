@@ -231,7 +231,7 @@
         this.fx.push({ k: "wave", id, t0: this.t, life: 1800, col: window.COUNTRIES[b.o].color, ox: src.cx, oy: src.cy });
         this.flags[id] = { t0: this.t, owner: b.o };
         for (let i = 0; i < 6; i++) this.boom(R.cx + (Math.random() - 0.5) * 8, R.cy + (Math.random() - 0.5) * 6, i < 2, i * 140);
-        this.popText(R.cx, R.cy - 3, "점령!", window.COUNTRIES[b.o].color);
+        this.popText(R.cx, R.cy - 3, L("점령!"), window.COUNTRIES[b.o].color);
         this.scar[id] = (this.scar[id] || 0) + 2; scarred = true;
       } else if (b.g < a.g - 0.5) {
         const lost = Math.round(a.g - b.g);
@@ -312,8 +312,8 @@
         const sx = bx0 + Math.round(W * frac);
         ctx.fillStyle = (Math.floor(t / 120) % 2) ? "#fff" : "#ffd34d"; ctx.fillRect(sx - 1, by0 - 2, 2, H + 4);
         ctx.font = "700 9px system-ui, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-        ctx.fillStyle = "#000"; ctx.fillText(r >= 1.15 ? "공세" : r <= 0.87 ? "저항" : "교착", tx + 1, by0 - 2);
-        ctx.fillStyle = r >= 1.15 ? "#ffd34d" : r <= 0.87 ? "#9cc9ff" : "#ddd"; ctx.fillText(r >= 1.15 ? "공세" : r <= 0.87 ? "저항" : "교착", tx, by0 - 3);
+        ctx.fillStyle = "#000"; ctx.fillText(r >= 1.15 ? L("공세") : r <= 0.87 ? L("저항") : L("교착"), tx + 1, by0 - 2);
+        ctx.fillStyle = r >= 1.15 ? "#ffd34d" : r <= 0.87 ? "#9cc9ff" : "#ddd"; ctx.fillText(r >= 1.15 ? L("공세") : r <= 0.87 ? L("저항") : L("교착"), tx, by0 - 3);
       }
       // 화살표를 따라 진군하는 부대
       const A = this.reg[o.from], B = this.reg[o.to];

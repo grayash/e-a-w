@@ -126,8 +126,8 @@
     const before = it.level;
     it.level = clamp(it.level + n, 0, cap);
     if (it.level !== before) {
-      const who = it.side === "mediate" ? "중재" : (it.side === "P" ? "내 편" : "상대 편");
-      log(s, "interv", `${R.name} ${who} 개입 ${it.level}단계: ${R.levels[it.level] || "중재 압박"}`, why);
+      const who = it.side === "mediate" ? L("중재") : (it.side === "P" ? L("내 편") : L("상대 편"));
+      log(s, "interv", L("{0} {1} 개입 {2}단계: {3}", R.name, who, it.level, R.levels[it.level] || L("중재 압박")), why);
       return true;
     }
     return false;
@@ -151,21 +151,21 @@
         if (cc.preemptPenalty) { me.opinion -= 10; me.morale -= 10; }
         if (me.id === "KR") s.flags.usCapUntil = 4;
         if (s.interv.US.side === side && me.id === "KR") s.interv.US.level = 0;
-        raiseSupporters(s, foe, `${cc.name}의 선제공격`);
+        raiseSupporters(s, foe, L("{0}의 선제공격", cc.name));
       }
       if (iAmAttacker && c.method === "border") s.flags.firstTurnAtk[side] = 0.7;
       if (!iAmAttacker) {
         if (c.method === "counter") s.flags.firstTurnAtk[foe] = 1 + (s.flags.firstTurnAtk[foe] - 1) / 2;
         if (c.method === "counter" && side === "P") me.supply -= 5;
         if (c.method === "fortify") { s.flags.fortifyUntil = 3; loseBorderRegion(s, side); }
-        if (c.method === "talks") { s.flags.talksEarly = true; raiseSupporters(s, side, "정전 외교 우선 대응"); }
+        if (c.method === "talks") { s.flags.talksEarly = true; raiseSupporters(s, side, L("정전 외교 우선 대응")); }
       }
       if (c.civil === "protect") { me.morale += 10; me.opinion += 10; }
-      if (c.civil === "unlimited") { me.morale -= 15; me.opinion -= 30; raiseSupporters(s, foe, `${cc.name}의 민간 피해 제한 없음`); }
+      if (c.civil === "unlimited") { me.morale -= 15; me.opinion -= 30; raiseSupporters(s, foe, L("{0}의 민간 피해 제한 없음", cc.name)); }
       if (c.sea === "partial") { me.economy -= 5; me.opinion -= 5; }
       if (c.sea === "full") {
         me.economy -= 15; me.opinion -= 10;
-        if (s.interv.NATO.side === foe || s.interv.NATO.side === "mediate") raise(s, "NATO", 1, `${cc.name}의 전면 해상 봉쇄`);
+        if (s.interv.NATO.side === foe || s.interv.NATO.side === "mediate") raise(s, "NATO", 1, L("{0}의 전면 해상 봉쇄", cc.name));
       }
       if (c.sanction === "impose") me.economy -= 5;
       clampSide(me);
@@ -179,9 +179,9 @@
       if (r.owner !== mine || M[id].capital) return false;
       return M[id].adj.some((a) => s.regions[a] && s.regions[a].owner === theirs);
     });
-    if (!cand.length) { log(s, "info", "국경이 맞닿지 않아 먼저 잃는 구역은 없었다", "방어선 구축"); return; }
+    if (!cand.length) { log(s, "info", L("국경이 맞닿지 않아 먼저 잃는 구역은 없었다"), L("방어선 구축")); return; }
     const id = cand[0];
-    capture(s, other(side), id, "방어선 구축을 위해 국경 구역을 내주었다");
+    capture(s, other(side), id, L("방어선 구축을 위해 국경 구역을 내주었다"));
   }
 
   /* ---------- 공격 가능 목표 ---------- */
@@ -304,10 +304,10 @@
       return r.orig === me.id && r.owner !== me.id && (M[id].core || M[id].capital);
     });
     const reqs = [
-      { label: "핵 보유국", ok: !!c.nuclear },
-      { label: `${R.unlockTurn}턴 이후`, ok: s.turn >= R.unlockTurn },
-      { label: "핵심 거점 상실 또는 병력 40% 미만", ok: lostCore || me.forces < me.forces0 * 0.4 },
-      { label: "보급 또는 사기 40 미만", ok: me.supply < 40 || me.morale < 40 },
+      { label: L("핵 보유국"), ok: !!c.nuclear },
+      { label: L("{0}턴 이후", R.unlockTurn), ok: s.turn >= R.unlockTurn },
+      { label: L("핵심 거점 상실 또는 병력 40% 미만"), ok: lostCore || me.forces < me.forces0 * 0.4 },
+      { label: L("보급 또는 사기 40 미만"), ok: me.supply < 40 || me.morale < 40 },
     ];
     const locked = s.flags.nukeLocked[side];
     return { reqs, locked, nuclear: !!c.nuclear, available: !locked && reqs.every((q) => q.ok) };
@@ -353,7 +353,7 @@
         const both = s.cards[foe] === "cyber";
         const k = both ? 0.5 : 1;
         s.sides[foe].supply -= 10 * k; s.sides[foe].morale -= 3 * k; me.economy -= 3; s.sides[foe].opinion += 5;
-        log(s, "harass", `${nm}의 사이버 공격: ${fn} 보급 −${10 * k}, 사기 −${3 * k}, 해군력 −20%`, both ? "양측 사이버전이 맞부딪혀 효과가 절반으로 줄었다" : "지휘·통신망과 물류 전산이 마비됐다");
+        log(s, "harass", L("{0}의 사이버 공격: {1} 보급 −{2}, 사기 −{3}, 해군력 −20%", nm, fn, 10 * k, 3 * k), both ? L("양측 사이버전이 맞부딪혀 효과가 절반으로 줄었다") : L("지휘·통신망과 물류 전산이 마비됐다"));
       }
       if (card === "spy") {
         const chance = 0.6 + (s.sides[foe].opinion < -20 ? 0.1 : 0) - (s.cards[foe] === "defend" ? 0.1 : 0);
@@ -364,10 +364,10 @@
           const pool = border.length ? border : Object.keys(s.regions).filter((id) => s.regions[id].owner === s.sides[foe].id);
           const id = pool[Math.floor(s.rand() * pool.length)];
           if (id) s.regions[id].garrison *= 0.7;
-          log(s, "harass", `${nm}의 공작 성공: ${fn} 사기 −8${id ? `, ${M[id].name} 수비 −30%` : ""}`, `성공 확률 ${Math.round(chance * 100)}%. 허위 정보와 사보타주로 내부가 흔들렸다`);
+          log(s, "harass", L("{0}의 공작 성공: {1} 사기 −8{2}", nm, fn, id ? L(", {0} 수비 −30%", M[id].name) : ""), L("성공 확률 {0}%. 허위 정보와 사보타주로 내부가 흔들렸다", Math.round(chance * 100)));
         } else {
           me.opinion -= 10;
-          log(s, "harass", `${nm} 공작원이 적발됐다. 여론 −10`, `성공 확률 ${Math.round(chance * 100)}%에서 실패했다`);
+          log(s, "harass", L("{0} 공작원이 적발됐다. 여론 −10", nm), L("성공 확률 {0}%에서 실패했다", Math.round(chance * 100)));
         }
       }
       if (card === "defend") { me.morale += 5; me.supply += 5; }
@@ -376,24 +376,24 @@
         const chance = 0.35 + me.opinion / 200;
         if (s.rand() < chance) {
           const sup = supportersOf(s, side).sort((a, b) => s.interv[a].level - s.interv[b].level);
-          if (sup.length) raise(s, sup[0], 1, `${nm}의 외교 공세`);
-          else Object.keys(s.interv).forEach((k) => { if (s.interv[k].side === "mediate") raise(s, k, 1, `${nm}의 외교 공세`); });
-        } else log(s, "info", `${nm}의 외교 공세가 개입을 끌어내지 못했다`, `여론 ${Math.round(me.opinion)}에서 성공 확률 ${Math.round(chance * 100)}%`);
+          if (sup.length) raise(s, sup[0], 1, L("{0}의 외교 공세", nm));
+          else Object.keys(s.interv).forEach((k) => { if (s.interv[k].side === "mediate") raise(s, k, 1, L("{0}의 외교 공세", nm)); });
+        } else log(s, "info", L("{0}의 외교 공세가 개입을 끌어내지 못했다", nm), L("여론 {0}에서 성공 확률 {1}%", Math.round(me.opinion), Math.round(chance * 100)));
       }
       if (card === "interdict") {
         const sea = s.cards[side] === "interdict" ? navyPower(s, side) : 0;
         const ok = sea > navyPower(s, foe);
         s.sides[foe].supply -= ok ? 15 : 7;
-        log(s, "harass", `${nm}의 보급선 차단으로 ${fn} 보급 −${ok ? 15 : 7}`, ok ? "해군력이 앞서 해상 보급로를 끊었다" : "해군력이 밀려 일부만 끊었다");
+        log(s, "harass", L("{0}의 보급선 차단으로 {1} 보급 −{2}", nm, fn, ok ? 15 : 7), ok ? L("해군력이 앞서 해상 보급로를 끊었다") : L("해군력이 밀려 일부만 끊었다"));
       }
       if (card === "ceasefire") resolveCeasefireOffer(s, side);
       if (card === "nukeThreat") {
         s.flags.threatened[side] = true;
         s.sides[foe].morale -= G.RULES.nuke.threatMorale;
         me.opinion -= G.RULES.nuke.threatOpinion;
-        raiseSupporters(s, foe, `${nm}의 핵 위협`);
-        log(s, "nuke", `${nm}이(가) 핵 위협을 했다. ${fn} 사기 −${G.RULES.nuke.threatMorale}`, "사용 없는 압박이지만 국제 여론이 크게 나빠졌다");
-        if (s.sides[foe].morale < 45 && foe === "E") s.pending = { kind: "aiOffer", why: "핵 위협에 상대 사기가 무너져 정전을 제안해 왔다" };
+        raiseSupporters(s, foe, L("{0}의 핵 위협", nm));
+        log(s, "nuke", L("{0}이(가) 핵 위협을 했다. {1} 사기 −{2}", nm, fn, G.RULES.nuke.threatMorale), L("사용 없는 압박이지만 국제 여론이 크게 나빠졌다"));
+        if (s.sides[foe].morale < 45 && foe === "E") s.pending = { kind: "aiOffer", why: L("핵 위협에 상대 사기가 무너져 정전을 제안해 왔다") };
       }
       if (card === "nukeUse") {
         const j = judgeNuke(s, side);
@@ -402,15 +402,15 @@
         s.flags.nukeLocked[side] = true;
         if (j.result === "intercept") {
           me.morale -= 25; me.opinion -= 40;
-          raiseSupporters(s, foe, `${nm}의 핵 사용 시도`);
-          log(s, "nuke", `${nm}의 핵 발사가 요격·차단됐다. 사기 −25, 여론 −40`, `요격 확률 ${Math.round(j.intercept * 100)}%가 작동했다`);
-          addTimeline(s, "핵 사용 시도", "발사 불발", "요격·차단 성공");
+          raiseSupporters(s, foe, L("{0}의 핵 사용 시도", nm));
+          log(s, "nuke", L("{0}의 핵 발사가 요격·차단됐다. 사기 −25, 여론 −40", nm), L("요격 확률 {0}%가 작동했다", Math.round(j.intercept * 100)));
+          addTimeline(s, L("핵 사용 시도"), L("발사 불발"), L("요격·차단 성공"));
         } else if (j.result === "mediate") {
-          endGame(s, "mediation", "draw", "핵 사용 직전 외교 중재로 정전 협상이 열렸다");
-          addTimeline(s, "핵 사용 시도", "외교 중재", "중립국·동맹 압박이 철회를 이끌었다");
+          endGame(s, "mediation", "draw", L("핵 사용 직전 외교 중재로 정전 협상이 열렸다"));
+          addTimeline(s, L("핵 사용 시도"), L("외교 중재"), L("중립국·동맹 압박이 철회를 이끌었다"));
         } else {
-          endGame(s, side === "P" ? "nuke" : "nukeEnemy", "none", `${nm}의 핵 사용으로 전쟁은 끝났지만 국제 고립이 시작됐다`);
-          addTimeline(s, "핵 사용 시도", "발사 성공", "개입과 외교가 모두 막지 못했다");
+          endGame(s, side === "P" ? "nuke" : "nukeEnemy", "none", L("{0}의 핵 사용으로 전쟁은 끝났지만 국제 고립이 시작됐다", nm));
+          addTimeline(s, L("핵 사용 시도"), L("발사 성공"), L("개입과 외교가 모두 막지 못했다"));
         }
       }
       clampSide(me); clampSide(s.sides[foe]);
@@ -426,7 +426,7 @@
       let t = list.find((x) => x.to === tgt);
       if (!t && side === "E" && list.length) t = list[0];
       if (!t) {
-        if (side === "P" && tgt) log(s, "info", "목표로 가는 길이 막혀 공세를 펼치지 못했다", "상대가 제해권을 쥐고 있다");
+        if (side === "P" && tgt) log(s, "info", L("목표로 가는 길이 막혀 공세를 펼치지 못했다"), L("상대가 제해권을 쥐고 있다"));
         return;
       }
       s.regions[t.to].gstart = s.regions[t.to].garrison;
@@ -520,10 +520,10 @@
     const R = G.RULES, side = o.side, foe = other(side);
     const key = s.cards[side] + ">" + s.cards[foe];
     if (R.counterReason[key]) return R.counterReason[key];
-    if (o.route !== "land") return "제해권을 잡아 상륙에 성공했다";
-    if (s.turn === 1 && s.flags.firstTurnAtk[side] > 1) return "개전 초 기습 효과가 컸다";
-    if (s.sides[foe].supply < 35) return "상대 보급이 바닥나 수비가 무너졌다";
-    return `${R.cards[s.cards[side]].name}로 병력 우위를 살렸다`;
+    if (o.route !== "land") return L("제해권을 잡아 상륙에 성공했다");
+    if (s.turn === 1 && s.flags.firstTurnAtk[side] > 1) return L("개전 초 기습 효과가 컸다");
+    if (s.sides[foe].supply < 35) return L("상대 보급이 바닥나 수비가 무너졌다");
+    return L("{0}로 병력 우위를 살렸다", R.cards[s.cards[side]].name);
   }
 
   function capture(s, side, id, why) {
@@ -539,11 +539,11 @@
     if (wasOrigFoe) { me.captured += 1; foe.lost += 1; }
     if (wasMine) { me.lost = Math.max(0, me.lost - 1); foe.captured = Math.max(0, foe.captured - 1); }
     const nm = G.COUNTRIES[me.id].name;
-    log(s, "capture", `${nm}, ${m.name} 점령${m.capital ? " (수도)" : ""}`, why);
-    const cn = G.RULES.cards[s.cards[side]] ? G.RULES.cards[s.cards[side]].name : "개전";
-    addTimeline(s, side === "P" ? cn : `상대 ${cn}`, `${nm} ${m.name} 점령`, why);
-    if (m.capital && wasOrigFoe) raiseSupporters(s, other(side), `${G.COUNTRIES[foe.id].name} 수도 함락`);
-    else if (m.core && wasOrigFoe && s.rand() < 0.5) raiseSupporters(s, other(side), `${G.COUNTRIES[foe.id].name} 핵심 거점 상실`);
+    log(s, "capture", L("{0}, {1} 점령{2}", nm, m.name, m.capital ? L(" (수도)") : ""), why);
+    const cn = G.RULES.cards[s.cards[side]] ? G.RULES.cards[s.cards[side]].name : L("개전");
+    addTimeline(s, side === "P" ? cn : L("상대 {0}", cn), L("{0} {1} 점령", nm, m.name), why);
+    if (m.capital && wasOrigFoe) raiseSupporters(s, other(side), L("{0} 수도 함락", G.COUNTRIES[foe.id].name));
+    else if (m.core && wasOrigFoe && s.rand() < 0.5) raiseSupporters(s, other(side), L("{0} 핵심 거점 상실", G.COUNTRIES[foe.id].name));
     clampSide(me); clampSide(foe);
   }
 
@@ -595,25 +595,25 @@
     Object.keys(s.interv).forEach((k) => {
       const it = s.interv[k];
       if (it.side === "mediate" && it.level >= 2 && s.turn >= 4 && !s.pending && s.rand() < 0.4)
-        s.pending = { kind: "aiOffer", why: `${R.interventions[k].name}의 중재로 정전 협상안이 나왔다` };
+        s.pending = { kind: "aiOffer", why: L("{0}의 중재로 정전 협상안이 나왔다", R.interventions[k].name) };
     });
     // AI 정전 제안
     if (!s.pending && s.turn >= 3 && s.turn - s.flags.lastAiOffer >= 3 && advantage(s, "E") < -25) {
-      s.pending = { kind: "aiOffer", why: "전세가 기운 상대가 정전을 제안해 왔다" };
+      s.pending = { kind: "aiOffer", why: L("전세가 기운 상대가 정전을 제안해 왔다") };
     }
     if (s.pending) s.flags.lastAiOffer = s.turn;
     // 턴 요약 타임라인
     const pc = R.cards[s.cards.P];
     if (pc && !s.turnLog.some((l) => l.kind === "capture")) {
       const ec = R.cards[s.cards.E];
-      addTimeline(s, pc.name, "전선 변화 없음", `상대는 ${ec ? ec.name : "대기"}를 택했다`);
+      addTimeline(s, pc.name, L("전선 변화 없음"), L("상대는 {0}를 택했다", ec ? ec.name : L("대기")));
     }
     rollWeather(s);
     s.flags.lastP = s.cards.P;
     s.lastCards = { P: s.cards.P, E: s.cards.E };
     s.cards.P = null; s.cards.E = null; s.targets.P = null; s.targets.E = null;
     checkEnd(s);
-    if (!s.over && s.turn >= R.end.safetyTurns) endGame(s, "mediation", "draw", "장기전에 국제 사회가 중재에 나서 전선이 동결됐다");
+    if (!s.over && s.turn >= R.end.safetyTurns) endGame(s, "mediation", "draw", L("장기전에 국제 사회가 중재에 나서 전선이 동결됐다"));
   }
 
   function advantage(s, side) {
@@ -631,21 +631,21 @@
     if (side === "P") {
       if (accept) {
         const res = territoryOutcome(s);
-        endGame(s, "ceasefire", res.winner, `정전 제안이 받아들여졌다. ${res.label}`);
-        addTimeline(s, "정전 제안", "정전 성립", "상대가 불리하다고 판단했다");
+        endGame(s, "ceasefire", res.winner, L("정전 제안이 받아들여졌다. {0}", res.label));
+        addTimeline(s, L("정전 제안"), L("정전 성립"), L("상대가 불리하다고 판단했다"));
       } else {
         s.sides.P.morale -= 5;
-        log(s, "info", "정전 제안이 거절됐다. 사기 −5", "상대는 아직 이길 수 있다고 본다");
-        addTimeline(s, "정전 제안", "거절", "상대 전력이 아직 우세했다");
+        log(s, "info", L("정전 제안이 거절됐다. 사기 −5"), L("상대는 아직 이길 수 있다고 본다"));
+        addTimeline(s, L("정전 제안"), L("거절"), L("상대 전력이 아직 우세했다"));
       }
     }
   }
 
   function territoryOutcome(s) {
     const net = s.sides.P.captured - s.sides.P.lost;
-    if (net > 0) return { winner: "P", label: "점령지를 지킨 유리한 정전이다" };
-    if (net < 0) return { winner: "E", label: "영토를 잃은 불리한 정전이다" };
-    return { winner: "draw", label: "현상 유지 정전이다" };
+    if (net > 0) return { winner: "P", label: L("점령지를 지킨 유리한 정전이다") };
+    if (net < 0) return { winner: "E", label: L("영토를 잃은 불리한 정전이다") };
+    return { winner: "draw", label: L("현상 유지 정전이다") };
   }
 
   function acceptAiOffer(s, yes) {
@@ -654,11 +654,11 @@
     if (yes) {
       const res = territoryOutcome(s);
       endGame(s, "ceasefire", res.winner, `${why}. ${res.label}`);
-      addTimeline(s, "정전안 수락", "정전 성립", why);
+      addTimeline(s, L("정전안 수락"), L("정전 성립"), why);
     } else {
       s.sides.E.morale -= 5;
-      log(s, "info", "정전안을 거절했다. 상대 사기 −5", why);
-      addTimeline(s, "정전안 거절", "전쟁 계속", why);
+      log(s, "info", L("정전안을 거절했다. 상대 사기 −5"), why);
+      addTimeline(s, L("정전안 거절"), L("전쟁 계속"), why);
     }
   }
 
@@ -670,11 +670,11 @@
       const me = s.sides[side], foe = s.sides[other(side)];
       const foeOrig = Object.keys(s.regions).filter((id) => s.regions[id].orig === foe.id);
       if (foeOrig.length && foeOrig.every((id) => s.regions[id].owner === me.id)) {
-        return endGame(s, "conquest", side, `${G.COUNTRIES[foe.id].name}의 모든 구역을 점령했다`);
+        return endGame(s, "conquest", side, L("{0}의 모든 구역을 점령했다", G.COUNTRIES[foe.id].name));
       }
       const keyIds = foeOrig.filter((id) => M[id].capital || M[id].core);
       if (keyIds.length && keyIds.every((id) => s.regions[id].owner === me.id)) {
-        return endGame(s, "core", side, `${G.COUNTRIES[foe.id].name}의 수도와 핵심 거점을 모두 점령했다`);
+        return endGame(s, "core", side, L("{0}의 수도와 핵심 거점을 모두 점령했다", G.COUNTRIES[foe.id].name));
       }
     }
     for (const side of ["P", "E"]) {
@@ -682,8 +682,8 @@
       const bad = [m.forces < m.forces0 * R.end.forcesFloor, m.supply < R.end.supplyFloor, m.morale < R.end.moraleFloor];
       if (bad.filter(Boolean).length >= 2) {
         const words = [];
-        if (bad[0]) words.push("병력"); if (bad[1]) words.push("보급"); if (bad[2]) words.push("사기");
-        return endGame(s, "exhaust", other(side), `${G.COUNTRIES[m.id].name}의 ${words.join("·")} 수치가 한계 아래로 떨어져 정전이 성립했다`);
+        if (bad[0]) words.push(L("병력")); if (bad[1]) words.push(L("보급")); if (bad[2]) words.push(L("사기"));
+        return endGame(s, "exhaust", other(side), L("{0}의 {1} 수치가 한계 아래로 떨어져 정전이 성립했다", G.COUNTRIES[m.id].name, words.join("·")));
       }
     }
   }
@@ -704,13 +704,13 @@
   }
 
   function resultLabel(over, s) {
-    const T = { conquest: "완전 점령", core: "핵심 거점 점령", exhaust: "", ceasefire: "정전", mediation: "중재 정전", nuke: "핵 사용 엔딩", nukeEnemy: "핵 사용 엔딩" };
+    const T = { conquest: L("완전 점령"), core: L("핵심 거점 점령"), exhaust: "", ceasefire: L("정전"), mediation: L("중재 정전"), nuke: L("핵 사용 엔딩"), nukeEnemy: L("핵 사용 엔딩") };
     let t = T[over.type];
     if (over.type === "exhaust") {
       const defenderWon = (over.winner === "P" && s.attacker === "E") || (over.winner === "E" && s.attacker === "P");
-      t = defenderWon ? (over.winner === "P" ? "방어 성공" : "상대의 방어 성공") : (over.winner === "P" ? "상대 전쟁 수행 능력 붕괴" : "전쟁 수행 능력 붕괴");
+      t = defenderWon ? (over.winner === "P" ? L("방어 성공") : L("상대의 방어 성공")) : (over.winner === "P" ? L("상대 전쟁 수행 능력 붕괴") : L("전쟁 수행 능력 붕괴"));
     }
-    const head = over.winner === "P" ? "승리" : over.winner === "E" ? "패배" : over.winner === "draw" ? "무승부" : "모두의 패배";
+    const head = over.winner === "P" ? L("승리") : over.winner === "E" ? L("패배") : over.winner === "draw" ? L("무승부") : L("모두의 패배");
     return { head, type: t };
   }
 

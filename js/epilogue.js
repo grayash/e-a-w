@@ -18,8 +18,8 @@
     let lit = { protect: 0.85, limited: 0.6, unlimited: 0.3 }[civilPolicy] || 0.6;
     if (nuke) lit = 0.1;
     const refugees = civilPolicy === "unlimited" || lostByP >= 2 || nuke;
-    const cityWhose = occupiedByP > 0 && o.winner === "P" ? "점령지 도시" : `${C[P.id].name}의 도시`;
-    const cityWhy = (occupiedByP > 0 && o.winner === "P" ? "내가 고른 " : "상대가 고른 ") + "민간 피해 정책: " +
+    const cityWhose = occupiedByP > 0 && o.winner === "P" ? L("점령지 도시") : L("{0}의 도시", C[P.id].name);
+    const cityWhy = (occupiedByP > 0 && o.winner === "P" ? L("내가 고른 ") : L("상대가 고른 ")) + L("민간 피해 정책: ") +
       (R.attackConditions[1].options.find((x) => x.id === civilPolicy) || {}).label;
 
     // 3컷 항구: 해상로 차단·제재·경제
@@ -28,8 +28,8 @@
     if (cp.sanction === "impose" || ce.sanction === "impose") ships = Math.max(0, ships - 1);
     if (P.economy < 40) ships = Math.max(0, ships - 1);
     if (nuke) ships = 0;
-    const seaLine = nuke ? "핵 사용 이후 항로가 모두 멈췄다" : R.epilogue.sea[worstSea];
-    const seaWhy = `해상로: 나 ${optLabel(2, cp.sea)} · 상대 ${optLabel(2, ce.sea)}, 경제 ${Math.round(P.economy)}`;
+    const seaLine = nuke ? L("핵 사용 이후 항로가 모두 멈췄다") : R.epilogue.sea[worstSea];
+    const seaWhy = L("해상로: 나 {0} · 상대 {1}, 경제 {2}", optLabel(2, cp.sea), optLabel(2, ce.sea), Math.round(P.economy));
 
     // 4컷 국제 반응
     const I = s.interv;
@@ -37,17 +37,17 @@
       key: k, name: R.interventions[k].name, level: I[k].level,
       side: I[k].side, color: I[k].side === "mediate" ? "#cbd5e1" : C[s.sides[I[k].side].id].color,
     }));
-    const intlLine = nuke ? "국제 사회가 등을 돌렸다. 깃발이 반쯤 내려갔다"
-      : P.opinion >= 0 ? "국제 여론은 대체로 우호적으로 남았다"
-      : P.opinion > -40 ? "국제 여론이 차가워졌다" : "국제 여론이 크게 등을 돌렸다";
-    const intlWhy = `국제 여론 ${Math.round(P.opinion)}, ` + flags.map((f) => `${f.name} ${f.level}단계`).join(" · ");
+    const intlLine = nuke ? L("국제 사회가 등을 돌렸다. 깃발이 반쯤 내려갔다")
+      : P.opinion >= 0 ? L("국제 여론은 대체로 우호적으로 남았다")
+      : P.opinion > -40 ? L("국제 여론이 차가워졌다") : L("국제 여론이 크게 등을 돌렸다");
+    const intlWhy = L("국제 여론 {0}, ", Math.round(P.opinion)) + flags.map((f) => L("{0} {1}단계", f.name, f.level)).join(" · ");
 
     const cuts = [
-      { key: "map", title: "1 지도", line: `${lab.head}: ${lab.type || "전쟁 종료"}`,
-        why: `${C[P.id].name} 점령 ${occupiedByP}구역 · 상실 ${lostByP}구역 · ${o.reason}` },
-      { key: "city", title: "2 " + cityWhose, line: nuke ? "도시의 불빛이 거의 꺼졌다" : R.epilogue.civil[civilPolicy], why: cityWhy, lit, refugees },
-      { key: "port", title: "3 항구", line: seaLine, why: seaWhy, ships },
-      { key: "intl", title: "4 국제 반응", line: intlLine, why: intlWhy, flags, nuke },
+      { key: "map", title: L("1 지도"), line: `${lab.head}: ${lab.type || L("전쟁 종료")}`,
+        why: L("{0} 점령 {1}구역 · 상실 {2}구역 · {3}", C[P.id].name, occupiedByP, lostByP, o.reason) },
+      { key: "city", title: "2 " + cityWhose, line: nuke ? L("도시의 불빛이 거의 꺼졌다") : R.epilogue.civil[civilPolicy], why: cityWhy, lit, refugees },
+      { key: "port", title: L("3 항구"), line: seaLine, why: seaWhy, ships },
+      { key: "intl", title: L("4 국제 반응"), line: intlLine, why: intlWhy, flags, nuke },
     ];
     return { cuts, mapView };
   }

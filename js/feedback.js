@@ -24,15 +24,15 @@ const ABUSE = ["시발", "씨발", "씨바", "ㅅㅂ", "ㅆㅂ", "병신", "ㅂ�
 const ADS = [/대출\s*(상담|문의|가능|승인|해\s*드)/, /도박|바카라|카지노|토토|슬롯/, /수익\s*보장|고수익|부업\s*문의|재택\s*알바|투자\s*리딩|리딩방/, /무료\s*상담|최저가|할인\s*코드|쿠폰\s*코드/];
 const squash = (s) => String(s).toLowerCase().replace(/[\s.\-_*~!?,]/g, "");
 function blocked(t) {
-  if (ABUSE.some((w) => squash(t).includes(w))) return "욕설이나 비하 표현이 들어 있어 보낼 수 없어요.";
-  if (ADS.some((re) => re.test(t))) return "광고로 보이는 글은 보낼 수 없어요.";
-  if (/(.)\1{9,}/.test(t)) return "같은 글자가 너무 많이 반복돼요.";
+  if (ABUSE.some((w) => squash(t).includes(w))) return L("욕설이나 비하 표현이 들어 있어 보낼 수 없어요.");
+  if (ADS.some((re) => re.test(t))) return L("광고로 보이는 글은 보낼 수 없어요.");
+  if (/(.)\1{9,}/.test(t)) return L("같은 글자가 너무 많이 반복돼요.");
   return null;
 }
 
 window.sendFeedback = async (raw, meta) => {
   const text = String(raw || "").trim().slice(0, 1000);
-  if (text.length < 2) return { error: "내용을 적어 주세요." };
+  if (text.length < 2) return { error: L("내용을 적어 주세요.") };
   const bad = blocked(text);
   if (bad) return { error: bad };
   try {
@@ -43,6 +43,6 @@ window.sendFeedback = async (raw, meta) => {
     await batch.commit();
     return { ok: true };
   } catch (e) {
-    return { error: e.code === "permission-denied" ? "잠시 뒤에 다시 보내 주세요. 1분에 한 번 보낼 수 있어요." : "보내지 못했어요. 잠시 뒤 다시 해 주세요." };
+    return { error: e.code === "permission-denied" ? L("잠시 뒤에 다시 보내 주세요. 1분에 한 번 보낼 수 있어요.") : L("보내지 못했어요. 잠시 뒤 다시 해 주세요.") };
   }
 };
