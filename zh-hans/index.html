@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-page-lang="zh-Hans">
+<head>
+<base href="../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>东亚战争模拟</title>
+<meta name="description" content="选择国家，设定开战条件与战略，战局随之改变的像素策略游戏。本游戏为虚构模拟。">
+<meta property="og:title" content="东亚战争模拟">
+<meta property="og:description" content="选择改变战局的像素策略游戏·韩国·中国·日本·朝鲜·台湾">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="zh_TW">
+<meta property="og:site_name" content="东亚战争模拟">
+<meta property="og:image" content="https://grayash.github.io/e-a-w/img/og-zh-Hans.png">
+<meta property="og:url" content="https://grayash.github.io/e-a-w/zh-hans/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="东亚战争模拟">
+<meta name="twitter:description" content="选择改变战局的像素策略游戏·韩国·中国·日本·朝鲜·台湾">
+<meta name="twitter:image" content="https://grayash.github.io/e-a-w/img/og-zh-Hans.png">
+<meta name="theme-color" content="#0f1420">
+<link rel="canonical" href="https://grayash.github.io/e-a-w/zh-hans/">
+<link rel="alternate" hreflang="ko" href="https://grayash.github.io/e-a-w/">
+<link rel="alternate" hreflang="en" href="https://grayash.github.io/e-a-w/en/">
+<link rel="alternate" hreflang="ja" href="https://grayash.github.io/e-a-w/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://grayash.github.io/e-a-w/zh-hans/">
+<link rel="alternate" hreflang="zh-Hant" href="https://grayash.github.io/e-a-w/zh-hant/">
+<link rel="alternate" hreflang="x-default" href="https://grayash.github.io/e-a-w/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css?v=0.8.0">
+<style>body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 1 시작 -->
+  <section class="screen on" id="s-start">
+    <div class="topbar"><span class="grow"></span><button class="icon-btn lang-btn" data-act="lang" aria-label="Language">🌐 <span id="langName"></span></button><button class="icon-btn" data-act="font" aria-label="字号">字</button></div>
+    <h1>东亚战争模拟</h1>
+    <p class="lead">选择国家，设定开战条件与战略。即使是同一个国家，选择不同，战局也会不同。</p>
+    <div class="hero"><canvas id="hero"></canvas></div>
+    <button class="btn primary" data-go="s-country">开始</button>
+    <button class="btn ghost" data-act="help">玩法说明</button>
+    <div class="notice">
+      <b>说明</b> · <span id="disc"></span><br>
+      <b>访问统计</b> · <span id="priv"></span>
+    </div>
+    <div class="links">
+      <button data-act="sources">军力分数来源</button>
+      <button data-act="feedback">发送意见</button>
+    </div>
+    <div class="spacer"></div>
+    <p class="small ver" id="ver"></p>
+  </section>
+
+  <!-- 2 국가 -->
+  <section class="screen" id="s-country">
+    <button class="back" data-go="s-start">← 返回首页</button>
+    <div class="step">1 / 3·选择国家</div>
+    <h2>要用哪个国家来玩？</h2>
+    <p class="lead">分数为将Global Firepower 2026指数换算为中国＝100后的基础军力。</p>
+    <div class="choices" id="countryList"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="countryNext" disabled>下一步</button>
+  </section>
+
+  <!-- 3 입장·상대 -->
+  <section class="screen" id="s-stance">
+    <button class="back" data-go="s-country">← 重新选择国家</button>
+    <div class="step">2 / 3·立场与对手</div>
+    <h2>进攻还是防守？</h2>
+    <div class="choices grid2" id="stanceList"></div>
+    <h3 id="enemyTitle">对手国</h3>
+    <div class="choices" id="enemyList"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="stanceNext" disabled>下一步</button>
+  </section>
+
+  <!-- 4 개전 조건 -->
+  <section class="screen" id="s-cond">
+    <button class="back" data-go="s-stance">← 重新选择立场</button>
+    <div class="step">3 / 3·开战条件</div>
+    <h2 id="condTitle">设定开战条件</h2>
+    <p class="lead" id="condLead"></p>
+    <div id="condGroups"></div>
+    <div class="explain" id="statExplain"></div>
+    <button class="btn primary" id="condNext">开战</button>
+  </section>
+
+  <!-- 5 전략 선택 -->
+  <section class="screen" id="s-strategy">
+    <div class="topbar"><div class="grow"><div class="step" id="stratStep"></div></div><button class="icon-btn" data-act="font" aria-label="字号">字</button></div>
+    <h2>这12小时的战略</h2>
+    <div id="stratSummary"></div>
+    <div class="stats compact" id="stratStats"></div>
+    <div class="notice" id="stratWeather" style="margin:0 0 12px"></div>
+    <div class="choices grid2" id="cardList"></div>
+    <div id="cardDesc" class="small" style="margin-top:10px"></div>
+    <div id="targetBox" style="display:none">
+      <h3>攻击目标 <span class="small">也可以点击地图选择</span></h3>
+      <div class="mapwrap"><canvas id="miniMap"></canvas></div>
+      <div class="targets" id="targetList" style="margin-top:10px"></div>
+    </div>
+    <div id="specialBox"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="stratGo" disabled>按此战略推进</button>
+  </section>
+
+  <!-- 6 지도 -->
+  <section class="screen" id="s-map">
+    <div class="hud">
+      <div class="clock grow" id="clock">D+0 00:00</div>
+    </div>
+    <div class="stats compact" id="mapStats"></div>
+    <div class="mapwrap">
+      <canvas id="map"></canvas>
+      <div class="mapctl">
+        <button data-zoom="in" aria-label="放大">＋</button>
+        <button data-zoom="out" aria-label="缩小">－</button>
+        <button data-zoom="front" aria-label="查看前线">前线</button>
+        <button data-zoom="all" aria-label="查看全图">全图</button>
+      </div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="front-list" id="frontList"></div>
+    <div class="feed-head"><b>战况报告</b><div class="speedbox"><div class="speed" id="speed"></div><button class="icon-btn" id="pauseBtn" aria-label="暂停">Ⅱ</button></div></div>
+    <div class="catlegend"><span class="c-atk">进攻</span><span class="c-def">防御</span><span class="c-harass">牵制</span><span class="c-news">快讯</span><span class="c-intl">国际</span></div>
+    <div class="feed" id="feed" aria-live="polite"></div>
+    <div class="nextbar"><div class="grow" id="nextInfo"></div><button class="btn ghost" id="skipBtn" style="margin:0">跳到决策时刻</button></div>
+  </section>
+
+  <!-- 7 턴 결과 -->
+  <section class="screen" id="s-turn">
+    <div class="step" id="turnStep"></div>
+    <h2 id="turnTitle">12小时的结果</h2>
+    <div class="vs" id="turnVs"></div>
+    <div class="events" id="turnEvents"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="turnNext">选择下一步战略</button>
+  </section>
+
+  <!-- 8 정전 제안 -->
+  <section class="screen" id="s-offer">
+    <div class="step">停火谈判</div>
+    <h2>收到了停火方案</h2>
+    <p class="lead" id="offerWhy"></p>
+    <div class="ev" id="offerNow"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="offerYes">接受：在当前战线停战</button>
+    <button class="btn ghost" id="offerNo">拒绝：继续战争</button>
+  </section>
+
+  <!-- 9 핵 판정 -->
+  <section class="screen" id="s-nuke">
+    <div class="step">拦截判定</div>
+    <h2 id="nukeTitle">尝试使用核武器</h2>
+    <p class="lead">依次判定拦截、外交调停、发射。概率由介入等级与舆论决定。</p>
+    <div class="judge" id="nukeJudge"></div>
+    <div class="ev nuke" id="nukeResult" style="display:none"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="nukeNext" disabled>继续</button>
+  </section>
+
+  <!-- 10 에필로그 -->
+  <section class="screen" id="s-epi">
+    <canvas id="epi"></canvas>
+    <div class="epi-dots" id="epiDots"></div>
+    <div class="epi-cap"><div class="cut" id="epiCut"></div><div class="line" id="epiLine"></div><div class="why" id="epiWhy"></div></div>
+    <div class="epi-note">这是根据你的选择推算出的虚构场景，并非真实预测。</div>
+    <div class="spacer"></div>
+    <div class="epi-foot"><button class="btn primary" id="epiNext">下一幕</button><button class="btn ghost" id="epiSkip">直接查看结果</button></div>
+  </section>
+
+  <!-- 11 최종 결과 -->
+  <section class="screen" id="s-result">
+    <div class="topbar"><span class="step grow">最终结果</span><button class="icon-btn" data-act="font" aria-label="字号">字</button></div>
+    <div class="result-card" id="resultCard"></div>
+    <h3>选择 → 结果 → 原因</h3>
+    <div class="timeline" id="timeline"></div>
+    <button class="btn primary" id="shareBtn" style="margin-top:18px">分享结果</button>
+    <button class="btn ghost" id="againBtn">用同一国家再玩一次</button>
+    <button class="btn ghost" data-go="s-start">返回首页</button>
+    <div class="links"><button data-act="feedback">发送意见</button><button data-act="sources">来源</button></div>
+  </section>
+
+  <!-- 13 의견 보내기 -->
+  <section class="screen" id="s-feedback">
+    <button class="back" id="fbBack">← 返回</button>
+    <h2>发送意见</h2>
+    <p class="lead">欢迎反馈不通顺的战况报告、平衡性、漏洞或期待的功能。在此提交的意见不会公开，只有开发者能看到。如需回复，请一并留下联系方式。</p>
+    <textarea id="fbText" maxlength="1000" placeholder="请写下你的意见"></textarea>
+    <div class="small" id="fbCount" style="text-align:right">0 / 1000</div>
+    <p class="fb-msg" id="fbMsg" role="alert"></p>
+    <button class="btn primary" id="fbSend">发送</button>
+    <p class="small" style="margin-top:14px">可以公开的意见也可以 <a href="https://github.com/grayash/e-a-w/issues/new" target="_blank" rel="noopener">发到GitHub</a> 。每分钟可发送一次意见。</p>
+  </section>
+
+  <!-- 12 공유 링크로 열었을 때 -->
+  <section class="screen" id="s-shared">
+    <div class="step">分享的结果</div>
+    <div class="result-card" id="sharedCard" style="margin-top:8px"></div>
+    <p class="small" style="margin-top:12px" id="sharedDisc"></p>
+    <div class="spacer"></div>
+    <button class="btn primary" id="sharedPlay">我也来玩</button>
+  </section>
+</div>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script src="js/i18n.js?v=0.8.0"></script>
+<script src="data/config.js?v=0.8.0"></script>
+<script src="data/countries.js?v=0.8.0"></script>
+<script src="data/rules.js?v=0.8.0"></script>
+<script src="data/map.js?v=0.8.0"></script>
+<script src="data/places.js?v=0.8.0"></script>
+<script src="js/engine.js?v=0.8.0"></script>
+<script src="js/map.js?v=0.8.0"></script>
+<script src="js/epilogue.js?v=0.8.0"></script>
+<script src="js/report.js?v=0.8.0"></script>
+<script src="js/ui.js?v=0.8.0"></script>
+<script type="module" src="js/analytics.js?v=0.8.0"></script>
+<script type="module" src="js/feedback.js?v=0.8.0"></script>
+</body>
+</html>

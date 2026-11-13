@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" data-page-lang="en">
+<head>
+<base href="../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>East Asia War Simulation</title>
+<meta name="description" content="Pick a country, set the opening conditions and strategy, and watch the war unfold differently. A pixel strategy game and fictional simulation.">
+<meta property="og:title" content="East Asia War Simulation">
+<meta property="og:description" content="A pixel strategy game where your choices change the war · South Korea, China, Japan, North Korea, Taiwan">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="zh_TW">
+<meta property="og:site_name" content="East Asia War Simulation">
+<meta property="og:image" content="https://grayash.github.io/e-a-w/img/og-en.png">
+<meta property="og:url" content="https://grayash.github.io/e-a-w/en/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="East Asia War Simulation">
+<meta name="twitter:description" content="A pixel strategy game where your choices change the war · South Korea, China, Japan, North Korea, Taiwan">
+<meta name="twitter:image" content="https://grayash.github.io/e-a-w/img/og-en.png">
+<meta name="theme-color" content="#0f1420">
+<link rel="canonical" href="https://grayash.github.io/e-a-w/en/">
+<link rel="alternate" hreflang="ko" href="https://grayash.github.io/e-a-w/">
+<link rel="alternate" hreflang="en" href="https://grayash.github.io/e-a-w/en/">
+<link rel="alternate" hreflang="ja" href="https://grayash.github.io/e-a-w/ja/">
+<link rel="alternate" hreflang="zh-Hans" href="https://grayash.github.io/e-a-w/zh-hans/">
+<link rel="alternate" hreflang="zh-Hant" href="https://grayash.github.io/e-a-w/zh-hant/">
+<link rel="alternate" hreflang="x-default" href="https://grayash.github.io/e-a-w/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css?v=0.8.0">
+<style>body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 1 시작 -->
+  <section class="screen on" id="s-start">
+    <div class="topbar"><span class="grow"></span><button class="icon-btn lang-btn" data-act="lang" aria-label="Language">🌐 <span id="langName"></span></button><button class="icon-btn" data-act="font" aria-label="Text size">A</button></div>
+    <h1>East Asia War Simulation</h1>
+    <p class="lead">Pick a country, then set the opening conditions and strategy. Even with the same country, your choices change how the war unfolds.</p>
+    <div class="hero"><canvas id="hero"></canvas></div>
+    <button class="btn primary" data-go="s-country">Start</button>
+    <button class="btn ghost" data-act="help">How to play</button>
+    <div class="notice">
+      <b>Note</b> · <span id="disc"></span><br>
+      <b>Visit stats</b> · <span id="priv"></span>
+    </div>
+    <div class="links">
+      <button data-act="sources">Military score sources</button>
+      <button data-act="feedback">Send feedback</button>
+    </div>
+    <div class="spacer"></div>
+    <p class="small ver" id="ver"></p>
+  </section>
+
+  <!-- 2 국가 -->
+  <section class="screen" id="s-country">
+    <button class="back" data-go="s-start">← Home</button>
+    <div class="step">1 / 3 · Choose a country</div>
+    <h2>Which country will you play?</h2>
+    <p class="lead">Scores are baseline military power from the Global Firepower 2026 index, scaled so China = 100.</p>
+    <div class="choices" id="countryList"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="countryNext" disabled>Next</button>
+  </section>
+
+  <!-- 3 입장·상대 -->
+  <section class="screen" id="s-stance">
+    <button class="back" data-go="s-country">← Choose another country</button>
+    <div class="step">2 / 3 · Stance and opponent</div>
+    <h2>Attack or defend?</h2>
+    <div class="choices grid2" id="stanceList"></div>
+    <h3 id="enemyTitle">Opponent</h3>
+    <div class="choices" id="enemyList"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="stanceNext" disabled>Next</button>
+  </section>
+
+  <!-- 4 개전 조건 -->
+  <section class="screen" id="s-cond">
+    <button class="back" data-go="s-stance">← Choose another stance</button>
+    <div class="step">3 / 3 · Opening conditions</div>
+    <h2 id="condTitle">Set the opening conditions</h2>
+    <p class="lead" id="condLead"></p>
+    <div id="condGroups"></div>
+    <div class="explain" id="statExplain"></div>
+    <button class="btn primary" id="condNext">Start the war</button>
+  </section>
+
+  <!-- 5 전략 선택 -->
+  <section class="screen" id="s-strategy">
+    <div class="topbar"><div class="grow"><div class="step" id="stratStep"></div></div><button class="icon-btn" data-act="font" aria-label="Text size">A</button></div>
+    <h2>Strategy for these 12 hours</h2>
+    <div id="stratSummary"></div>
+    <div class="stats compact" id="stratStats"></div>
+    <div class="notice" id="stratWeather" style="margin:0 0 12px"></div>
+    <div class="choices grid2" id="cardList"></div>
+    <div id="cardDesc" class="small" style="margin-top:10px"></div>
+    <div id="targetBox" style="display:none">
+      <h3>Attack target <span class="small">You can also tap the map</span></h3>
+      <div class="mapwrap"><canvas id="miniMap"></canvas></div>
+      <div class="targets" id="targetList" style="margin-top:10px"></div>
+    </div>
+    <div id="specialBox"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="stratGo" disabled>Go with this strategy</button>
+  </section>
+
+  <!-- 6 지도 -->
+  <section class="screen" id="s-map">
+    <div class="hud">
+      <div class="clock grow" id="clock">D+0 00:00</div>
+    </div>
+    <div class="stats compact" id="mapStats"></div>
+    <div class="mapwrap">
+      <canvas id="map"></canvas>
+      <div class="mapctl">
+        <button data-zoom="in" aria-label="Zoom in">＋</button>
+        <button data-zoom="out" aria-label="Zoom out">－</button>
+        <button data-zoom="front" aria-label="Show the front">Front</button>
+        <button data-zoom="all" aria-label="Show all">All</button>
+      </div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="front-list" id="frontList"></div>
+    <div class="feed-head"><b>Battle reports</b><div class="speedbox"><div class="speed" id="speed"></div><button class="icon-btn" id="pauseBtn" aria-label="Pause">Ⅱ</button></div></div>
+    <div class="catlegend"><span class="c-atk">Attack</span><span class="c-def">Defend</span><span class="c-harass">Harass</span><span class="c-news">Breaking</span><span class="c-intl">World</span></div>
+    <div class="feed" id="feed" aria-live="polite"></div>
+    <div class="nextbar"><div class="grow" id="nextInfo"></div><button class="btn ghost" id="skipBtn" style="margin:0">Skip to decision</button></div>
+  </section>
+
+  <!-- 7 턴 결과 -->
+  <section class="screen" id="s-turn">
+    <div class="step" id="turnStep"></div>
+    <h2 id="turnTitle">Results of the 12 hours</h2>
+    <div class="vs" id="turnVs"></div>
+    <div class="events" id="turnEvents"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="turnNext">Choose next strategy</button>
+  </section>
+
+  <!-- 8 정전 제안 -->
+  <section class="screen" id="s-offer">
+    <div class="step">Ceasefire talks</div>
+    <h2>A ceasefire offer has arrived</h2>
+    <p class="lead" id="offerWhy"></p>
+    <div class="ev" id="offerNow"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="offerYes">Accept: stop on the current front</button>
+    <button class="btn ghost" id="offerNo">Refuse: keep fighting</button>
+  </section>
+
+  <!-- 9 핵 판정 -->
+  <section class="screen" id="s-nuke">
+    <div class="step">Interception check</div>
+    <h2 id="nukeTitle">Attempt nuclear use</h2>
+    <p class="lead">Resolved in order: interception, diplomatic mediation, launch. Chances depend on intervention levels and opinion.</p>
+    <div class="judge" id="nukeJudge"></div>
+    <div class="ev nuke" id="nukeResult" style="display:none"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="nukeNext" disabled>Continue</button>
+  </section>
+
+  <!-- 10 에필로그 -->
+  <section class="screen" id="s-epi">
+    <canvas id="epi"></canvas>
+    <div class="epi-dots" id="epiDots"></div>
+    <div class="epi-cap"><div class="cut" id="epiCut"></div><div class="line" id="epiLine"></div><div class="why" id="epiWhy"></div></div>
+    <div class="epi-note">A fictional scene calculated from your choices, not a real prediction.</div>
+    <div class="spacer"></div>
+    <div class="epi-foot"><button class="btn primary" id="epiNext">Next scene</button><button class="btn ghost" id="epiSkip">Skip to result</button></div>
+  </section>
+
+  <!-- 11 최종 결과 -->
+  <section class="screen" id="s-result">
+    <div class="topbar"><span class="step grow">Final result</span><button class="icon-btn" data-act="font" aria-label="Text size">A</button></div>
+    <div class="result-card" id="resultCard"></div>
+    <h3>Choice → result → reason</h3>
+    <div class="timeline" id="timeline"></div>
+    <button class="btn primary" id="shareBtn" style="margin-top:18px">Share result</button>
+    <button class="btn ghost" id="againBtn">Play again as the same country</button>
+    <button class="btn ghost" data-go="s-start">Home</button>
+    <div class="links"><button data-act="feedback">Send feedback</button><button data-act="sources">Sources</button></div>
+  </section>
+
+  <!-- 13 의견 보내기 -->
+  <section class="screen" id="s-feedback">
+    <button class="back" id="fbBack">← Back</button>
+    <h2>Send feedback</h2>
+    <p class="lead">Tell us about awkward battle reports, balance, bugs or anything you'd like to see. Feedback sent here is private and read only by the developer. If you'd like a reply, include your contact details.</p>
+    <textarea id="fbText" maxlength="1000" placeholder="Write your feedback"></textarea>
+    <div class="small" id="fbCount" style="text-align:right">0 / 1000</div>
+    <p class="fb-msg" id="fbMsg" role="alert"></p>
+    <button class="btn primary" id="fbSend">Send</button>
+    <p class="small" style="margin-top:14px">Feedback that's fine to make public can also be <a href="https://github.com/grayash/e-a-w/issues/new" target="_blank" rel="noopener">posted on GitHub</a> . You can send feedback once a minute.</p>
+  </section>
+
+  <!-- 12 공유 링크로 열었을 때 -->
+  <section class="screen" id="s-shared">
+    <div class="step">Shared result</div>
+    <div class="result-card" id="sharedCard" style="margin-top:8px"></div>
+    <p class="small" style="margin-top:12px" id="sharedDisc"></p>
+    <div class="spacer"></div>
+    <button class="btn primary" id="sharedPlay">Try it yourself</button>
+  </section>
+</div>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script src="js/i18n.js?v=0.8.0"></script>
+<script src="data/config.js?v=0.8.0"></script>
+<script src="data/countries.js?v=0.8.0"></script>
+<script src="data/rules.js?v=0.8.0"></script>
+<script src="data/map.js?v=0.8.0"></script>
+<script src="data/places.js?v=0.8.0"></script>
+<script src="js/engine.js?v=0.8.0"></script>
+<script src="js/map.js?v=0.8.0"></script>
+<script src="js/epilogue.js?v=0.8.0"></script>
+<script src="js/report.js?v=0.8.0"></script>
+<script src="js/ui.js?v=0.8.0"></script>
+<script type="module" src="js/analytics.js?v=0.8.0"></script>
+<script type="module" src="js/feedback.js?v=0.8.0"></script>
+</body>
+</html>

@@ -25,7 +25,9 @@
   try { q = new URLSearchParams(location.search).get("lang"); } catch (e) {}
   var saved = null;
   try { saved = localStorage.getItem("eaw-lang"); } catch (e) {}
-  var lang = ids.indexOf(q) >= 0 ? q : ids.indexOf(saved) >= 0 ? saved : fromNav();
+  // 언어별 페이지(/en/ 등)는 그 언어로 고정, 첫 페이지는 저장된 선택·기기 언어를 따른다
+  var page = document.documentElement.getAttribute("data-page-lang");
+  var lang = ids.indexOf(q) >= 0 ? q : ids.indexOf(page) >= 0 ? page : ids.indexOf(saved) >= 0 ? saved : fromNav();
   if (ids.indexOf(q) >= 0) { try { localStorage.setItem("eaw-lang", q); } catch (e) {} }
   window.LANG = lang;
   window.LANGS = LANGS;
@@ -42,8 +44,9 @@
   };
   window.setLang = function (l) {
     try { localStorage.setItem("eaw-lang", l); } catch (e) {}
-    var u = new URL(location.href); u.searchParams.delete("lang");
-    location.replace(u.toString());
+    // 언어별 페이지로 이동 (한국어는 첫 페이지)
+    var u = new URL(l === "ko" ? "./" : l.toLowerCase() + "/", document.baseURI);
+    location.assign(u.toString());
   };
 
   if (lang !== "ko") {
