@@ -7,7 +7,7 @@
   const score = (cid) => Math.round(C.CN.gfp / C[cid].gfp * 100);
   const M = Eng.regionMap();
 
-  const ui = { player: null, stance: null, enemy: null, cond: {}, s: null, speed: 4, paused: false, hourInTurn: 0, gameMin: 0, skipping: false, card: null, target: null };
+  const ui = { player: null, stance: null, enemy: null, cond: {}, s: null, speed: 2, paused: false, hourInTurn: 0, gameMin: 0, skipping: false, card: null, target: null };
 
   /* ---------- 공통 ---------- */
   function go(id) {
@@ -56,7 +56,7 @@
     sheet(`<h3>게임 방법</h3>
       <p>1. 나라를 고르고 <b>공격</b> 또는 <b>방어</b> 입장을 정합니다. 방어를 고르면 상대가 먼저 공격해 옵니다.</p>
       <p>2. 개전 조건 4개를 정합니다. 각 조건은 당장의 이득과 나중의 대가가 함께 있습니다.</p>
-      <p>3. 게임 속 12시간마다 전략 카드 1장과 공격 목표를 고릅니다. 고르면 시간이 자동으로 흐르고, 전황 보고가 실시간으로 올라옵니다. 배율은 4·8·16배(4배 = 현실 1분에 12시간)입니다.</p>
+      <p>3. 게임 속 12시간마다 전략 카드 1장과 공격 목표를 고릅니다. 고르면 시간이 자동으로 흐르고, 전황 보고가 실시간으로 올라옵니다. 배율은 1·2·4·6배(기본 2배 = 현실 2분에 12시간)입니다.</p>
       <p>4. 상대도 카드를 고릅니다. 상성(정면 돌파 &lt; 방어 태세 &lt; 우회 기습 &lt; 공중 우세)에 따라 결과가 달라지고, 결과마다 이유가 한 줄로 나옵니다.</p>
       <p>5. 끝나는 조건은 <b>완전 점령</b>, <b>핵심 거점 점령</b>(수도와 ★·■ 표시 구역), <b>방어 성공</b>(상대의 병력·보급·사기 중 둘이 한계 아래), 정전입니다. 시간 제한은 없습니다.</p>
       <p>6. 바다를 건너는 공격은 제해권에 따라 공격력이 달라집니다. 상대가 쥔 바다를 건너면 공격력이 절반이 됩니다. <b>보급선 차단</b>·<b>사이버 공격</b>으로 해군력을 흔들거나 <b>공중 우세</b>·<b>드론</b>으로 타격하세요.</p>
@@ -243,13 +243,13 @@
     if (!ui.feed || !ui.s) return;
     const queue = ui.feed.filter((m) => m.shown < m.text.length).reverse(); // 오래된 것 먼저
     if (!queue.length) return;
-    const cap = ui.speed >= 16 ? 2 : 3;
+    const cap = ui.speed >= 6 ? 2 : 3;
     let changed = false;
     while (queue.length > cap) { const m = queue.shift(); m.shown = m.text.length; m.started = true; changed = true; }
     const m = queue[0];
     if (!m.started) { m.started = true; changed = true; }
     if (changed) renderFeed();
-    const step = ui.speed >= 16 ? 4 : ui.speed >= 8 ? 2 : 1;
+    const step = ui.speed >= 6 ? 2 : 1;
     m.shown = Math.min(m.text.length, m.shown + step);
     updateMsg(m);
   }, 35);
