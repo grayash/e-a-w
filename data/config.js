@@ -2,7 +2,7 @@
 window.CONFIG = {
   title: "동아시아 전쟁 시뮬레이션",
   subtitle: "선택이 전황을 바꾸는 도트 전략 게임",
-  version: "0.4.1 베타",
+  version: "0.4.2 베타",
   asOf: "2026년 11월",
   // 배포 시 실제 의견 받기 주소(구글 폼 또는 GitHub Issues)로 교체
   feedbackUrl: "https://github.com/grayash/e-a-w/issues",
