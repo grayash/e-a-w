@@ -214,3 +214,5 @@ a { color: var(--accent); }
 @keyframes blink { 50% { opacity: 0; } }
 
 .stats.compact .mini .full { grid-column: 1 / -1; }
+
+.ver { text-align: center; margin: 18px 0 0; }

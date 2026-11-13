@@ -74,7 +74,7 @@
   }
 
   /* ---------- 시작 화면 ---------- */
-  $("ver").textContent = CFG.version;
+  $("ver").textContent = `${CFG.title} · 버전 ${CFG.version} · 기준 ${CFG.asOf}`;
   $("disc").textContent = CFG.disclaimer;
   $("priv").textContent = CFG.privacy;
   const heroView = new MapView($("hero"), { interactive: false, aspect: 0.62 });

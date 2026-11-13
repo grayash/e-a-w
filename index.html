@@ -13,6 +13,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0f1420">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="css/style.css">
 <style>body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}</style>
 </head>
@@ -21,7 +23,7 @@
 
   <!-- 1 시작 -->
   <section class="screen on" id="s-start">
-    <div class="topbar"><span class="small grow" id="ver"></span><button class="icon-btn" data-act="font" aria-label="글자 크기">가</button></div>
+    <div class="topbar"><span class="grow"></span><button class="icon-btn" data-act="font" aria-label="글자 크기">가</button></div>
     <h1>동아시아 전쟁 시뮬레이션</h1>
     <p class="lead">나라를 고르고 개전 조건과 전략을 정하세요. 같은 나라라도 선택에 따라 전황이 달라집니다.</p>
     <div class="hero"><canvas id="hero"></canvas></div>
@@ -29,12 +31,14 @@
     <button class="btn ghost" data-act="help">게임 방법</button>
     <div class="notice">
       <b>안내</b> · <span id="disc"></span><br>
-      <b>개인 정보</b> · <span id="priv"></span>
+      <b>방문 통계</b> · <span id="priv"></span>
     </div>
     <div class="links">
       <button data-act="sources">군사력 점수 출처</button>
       <button data-act="feedback">의견 보내기</button>
     </div>
+    <div class="spacer"></div>
+    <p class="small ver" id="ver"></p>
   </section>
 
   <!-- 2 국가 -->
