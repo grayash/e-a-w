@@ -93,10 +93,10 @@
   $("ver").textContent = `${CFG.title} · 버전 ${CFG.version} · 기준 ${CFG.asOf}`;
   $("disc").textContent = CFG.disclaimer;
   $("priv").textContent = CFG.privacy;
-  const heroView = new MapView($("hero"), { interactive: false, aspect: 0.62 });
+  const heroView = new MapView($("hero"), { interactive: false, aspect: 0.62, static: true });
   function drawHero() {
     heroView.resize(); heroView.state = null; heroView.redrawBase();
-    heroView.fitRegions(Object.keys(M).filter((id) => M[id].type === "land"), 2);
+    heroView.fitRegions(Object.keys(M).filter((id) => M[id].type === "land"), 4);
     heroView.draw(0);
   }
 
@@ -193,7 +193,7 @@
     const s = ui.s; if (!s) return;
     // 공세가 있으면 목표 구역 중심으로(출발 구역이 큰 나라면 전장이 너무 작아진다)
     const ids = s.offensives.length ? s.offensives.map((o) => o.to) : theaterIds(s);
-    v.fitRegions(ids, s.offensives.length ? 16 : 3);
+    v.fitRegions(ids, s.offensives.length ? 14 : 6);
   }
 
   /* ---------- 상태 카드 ---------- */
@@ -281,7 +281,7 @@
     $("cardDesc").textContent = s.flags.lastP ? `지난 결정: 나 ${R.cards[s.lastCards.P].name} · 상대 ${R.cards[s.lastCards.E] ? R.cards[s.lastCards.E].name : "-"}` : "상대도 동시에 카드를 고릅니다. 상성을 읽어 보세요.";
     $("stratGo").disabled = true;
     go("s-strategy");
-    if (!miniView) miniView = new MapView($("miniMap"), { aspect: 0.62, onTap: (id) => { if (targetsNow().some((t) => t.to === id)) pickTarget(id); else toast(`${M[id].name}: 지금 닿을 수 있는 공격 목표가 아닙니다`); } });
+    if (!miniView) miniView = new MapView($("miniMap"), { aspect: 0.62, static: true, onTap: (id) => { if (targetsNow().some((t) => t.to === id)) pickTarget(id); else toast(`${M[id].name}: 지금 닿을 수 있는 공격 목표가 아닙니다`); } });
   }
 
   function specialCards() {
@@ -350,7 +350,7 @@
     const t = targetsNow().find((x) => x.to === id);
     miniView.preview = t ? { from: t.from, to: t.to, route: t.route, side: "P" } : null;
     miniView.highlight = id;
-    miniView.fitRegions([id], 16);
+    miniView.fitRegions([id], 32);
     renderTargets(); $("stratGo").disabled = false;
   }
   $("targetList").addEventListener("click", (e) => { const b = e.target.closest("[data-tg]"); if (!b) return; pickTarget(b.dataset.tg); });

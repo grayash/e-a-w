@@ -124,7 +124,7 @@
     const a = own(s.sides.P.id), b = own(s.sides.E.id);
     const small = a.length <= b.length ? a : b;
     const changed = Object.keys(s.regions).filter((id) => s.regions[id].owner !== s.regions[id].orig);
-    mapView.fitRegions(small.concat(changed), 9);
+    mapView.fitRegions(small.concat(changed), 18);
     const K = mapView.base.width / mapView.D.cols, v = mapView.view;
     return { src: mapView.base, sx: v.x * K, sy: v.y * K, sw: v.w * K, sh: v.h * K };
   }
