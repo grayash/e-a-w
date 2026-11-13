@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>동아시아 전쟁 시뮬레이션</title>
+<meta name="description" content="나라를 고르고 개전 조건과 전략을 선택하면 전황이 달라지는 도트 전략 게임. 가상 시뮬레이션입니다.">
+<meta property="og:title" content="동아시아 전쟁 시뮬레이션">
+<meta property="og:description" content="선택이 전황을 바꾸는 도트 전략 게임 · 한국·중국·일본·북한·대만">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://grayash.github.io/e-a-w/og.png">
+<meta property="og:url" content="https://grayash.github.io/e-a-w/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0f1420">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<style>body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 1 시작 -->
+  <section class="screen on" id="s-start">
+    <div class="topbar"><span class="small grow" id="ver"></span><button class="icon-btn" data-act="font" aria-label="글자 크기">가</button></div>
+    <h1>동아시아 전쟁 시뮬레이션</h1>
+    <p class="lead">나라를 고르고 개전 조건과 전략을 정하세요. 같은 나라라도 선택에 따라 전황이 달라집니다.</p>
+    <div class="hero"><canvas id="hero"></canvas></div>
+    <button class="btn primary" data-go="s-country">시작하기</button>
+    <button class="btn ghost" data-act="help">게임 방법</button>
+    <div class="notice">
+      <b>안내</b> · <span id="disc"></span><br>
+      <b>개인 정보</b> · <span id="priv"></span>
+    </div>
+    <div class="links">
+      <button data-act="sources">군사력 점수 출처</button>
+      <button data-act="feedback">의견 보내기</button>
+    </div>
+  </section>
+
+  <!-- 2 국가 -->
+  <section class="screen" id="s-country">
+    <button class="back" data-go="s-start">← 처음으로</button>
+    <div class="step">1 / 3 · 국가 선택</div>
+    <h2>어느 나라로 플레이할까요?</h2>
+    <p class="lead">점수는 Global Firepower 2026 지수를 중국 = 100으로 환산한 기본 군사력입니다.</p>
+    <div class="choices" id="countryList"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="countryNext" disabled>다음</button>
+  </section>
+
+  <!-- 3 입장·상대 -->
+  <section class="screen" id="s-stance">
+    <button class="back" data-go="s-country">← 국가 다시 고르기</button>
+    <div class="step">2 / 3 · 입장과 상대</div>
+    <h2>공격할까요, 막을까요?</h2>
+    <div class="choices grid2" id="stanceList"></div>
+    <h3 id="enemyTitle">상대국</h3>
+    <div class="choices" id="enemyList"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="stanceNext" disabled>다음</button>
+  </section>
+
+  <!-- 4 개전 조건 -->
+  <section class="screen" id="s-cond">
+    <button class="back" data-go="s-stance">← 입장 다시 고르기</button>
+    <div class="step">3 / 3 · 개전 조건</div>
+    <h2 id="condTitle">개전 조건을 정하세요</h2>
+    <p class="lead" id="condLead"></p>
+    <div id="condGroups"></div>
+    <div class="explain" id="statExplain"></div>
+    <button class="btn primary" id="condNext">전쟁 시작</button>
+  </section>
+
+  <!-- 5 전략 선택 -->
+  <section class="screen" id="s-strategy">
+    <div class="topbar"><div class="grow"><div class="step" id="stratStep"></div></div><button class="icon-btn" data-act="font" aria-label="글자 크기">가</button></div>
+    <h2>이번 12시간의 전략</h2>
+    <div id="stratSummary"></div>
+    <div class="stats compact" id="stratStats"></div>
+    <div class="notice" id="stratWeather" style="margin:0 0 12px"></div>
+    <div class="choices grid2" id="cardList"></div>
+    <div id="cardDesc" class="small" style="margin-top:10px"></div>
+    <div id="targetBox" style="display:none">
+      <h3>공격 목표 <span class="small">지도에서 눌러도 됩니다</span></h3>
+      <div class="mapwrap"><canvas id="miniMap"></canvas></div>
+      <div class="targets" id="targetList" style="margin-top:10px"></div>
+    </div>
+    <div id="specialBox"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="stratGo" disabled>이 전략으로 진행</button>
+  </section>
+
+  <!-- 6 지도 -->
+  <section class="screen" id="s-map">
+    <div class="hud">
+      <div class="clock grow" id="clock">D+0 00:00</div>
+    </div>
+    <div class="stats compact" id="mapStats"></div>
+    <div class="mapwrap">
+      <canvas id="map"></canvas>
+      <div class="mapctl">
+        <button data-zoom="in" aria-label="확대">＋</button>
+        <button data-zoom="out" aria-label="축소">－</button>
+        <button data-zoom="front" aria-label="전선 보기">전선</button>
+        <button data-zoom="all" aria-label="전체 보기">전체</button>
+      </div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="front-list" id="frontList"></div>
+    <div class="feed-head"><b>전황 보고</b><div class="speedbox"><div class="speed" id="speed"></div><button class="icon-btn" id="pauseBtn" aria-label="일시정지">Ⅱ</button></div></div>
+    <div class="catlegend"><span class="c-atk">공격</span><span class="c-def">방어</span><span class="c-harass">견제</span><span class="c-news">속보</span><span class="c-intl">국제</span></div>
+    <div class="feed" id="feed" aria-live="polite"></div>
+    <div class="nextbar"><div class="grow" id="nextInfo"></div><button class="btn ghost" id="skipBtn" style="margin:0">결정까지 건너뛰기</button></div>
+  </section>
+
+  <!-- 7 턴 결과 -->
+  <section class="screen" id="s-turn">
+    <div class="step" id="turnStep"></div>
+    <h2 id="turnTitle">12시간의 결과</h2>
+    <div class="vs" id="turnVs"></div>
+    <div class="events" id="turnEvents"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="turnNext">다음 전략 고르기</button>
+  </section>
+
+  <!-- 8 정전 제안 -->
+  <section class="screen" id="s-offer">
+    <div class="step">정전 협상</div>
+    <h2>정전안이 들어왔습니다</h2>
+    <p class="lead" id="offerWhy"></p>
+    <div class="ev" id="offerNow"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="offerYes">수락: 현재 전선에서 멈춘다</button>
+    <button class="btn ghost" id="offerNo">거절: 전쟁을 계속한다</button>
+  </section>
+
+  <!-- 9 핵 판정 -->
+  <section class="screen" id="s-nuke">
+    <div class="step">저지 판정</div>
+    <h2 id="nukeTitle">핵 사용 시도</h2>
+    <p class="lead">요격, 외교 중재, 발사 순서로 판정합니다. 확률은 개입 단계와 여론으로 정해집니다.</p>
+    <div class="judge" id="nukeJudge"></div>
+    <div class="ev nuke" id="nukeResult" style="display:none"></div>
+    <div class="spacer"></div>
+    <button class="btn primary" id="nukeNext" disabled>계속</button>
+  </section>
+
+  <!-- 10 에필로그 -->
+  <section class="screen" id="s-epi">
+    <canvas id="epi"></canvas>
+    <div class="epi-dots" id="epiDots"></div>
+    <div class="epi-cap"><div class="cut" id="epiCut"></div><div class="line" id="epiLine"></div><div class="why" id="epiWhy"></div></div>
+    <div class="epi-note">선택에서 계산한 가상 장면이며 실제 예측이 아닙니다.</div>
+    <div class="spacer"></div>
+    <div class="epi-foot"><button class="btn primary" id="epiNext">다음 장면</button><button class="btn ghost" id="epiSkip">결과 바로 보기</button></div>
+  </section>
+
+  <!-- 11 최종 결과 -->
+  <section class="screen" id="s-result">
+    <div class="topbar"><span class="step grow">최종 결과</span><button class="icon-btn" data-act="font" aria-label="글자 크기">가</button></div>
+    <div class="result-card" id="resultCard"></div>
+    <h3>선택 → 결과 → 이유</h3>
+    <div class="timeline" id="timeline"></div>
+    <button class="btn primary" id="shareBtn" style="margin-top:18px">결과 공유하기</button>
+    <button class="btn ghost" id="againBtn">같은 나라로 다시</button>
+    <button class="btn ghost" data-go="s-start">처음으로</button>
+    <div class="links"><button data-act="feedback">의견 보내기</button><button data-act="sources">출처</button></div>
+  </section>
+
+  <!-- 12 공유 링크로 열었을 때 -->
+  <section class="screen" id="s-shared">
+    <div class="step">공유된 결과</div>
+    <div class="result-card" id="sharedCard" style="margin-top:8px"></div>
+    <p class="small" style="margin-top:12px" id="sharedDisc"></p>
+    <div class="spacer"></div>
+    <button class="btn primary" id="sharedPlay">나도 해보기</button>
+  </section>
+</div>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script src="data/config.js"></script>
+<script src="data/countries.js"></script>
+<script src="data/rules.js"></script>
+<script src="data/map.js"></script>
+<script src="data/places.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/map.js"></script>
+<script src="js/epilogue.js"></script>
+<script src="js/report.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
